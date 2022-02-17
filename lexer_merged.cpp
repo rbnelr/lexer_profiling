@@ -5,6 +5,7 @@
 #include "string.h"
 #include <string_view>
 #include <stdexcept>
+#include <chrono>
 
 inline constexpr size_t KB = (size_t)1024;
 inline constexpr size_t MB = (size_t)1024 * 1024;
@@ -1025,9 +1026,8 @@ std::string load_text_file (const char* filename) {
 _NOINLINE void profile_lexer (char const* filename) {
 	std::string file = load_text_file(filename);
 	
-    // <TIMER> need to plug in your own timer here possibly std::chrono
-    // (I use QueryPerformanceCounter for high-perf measuring on windows)
-
+	auto start = std::chrono::steady_clock::now();
+	
 	//auto timer = Timer::start();
 	{
 		Lexer lex{file.c_str()};
@@ -1038,10 +1038,15 @@ _NOINLINE void profile_lexer (char const* filename) {
 	}
 	//float time = timer.end();
 
-	//printf("%30s: %8llu MB  in  %6.2f ms  ->  %6.2f MB/s\n", filename,
-	//	file.size() / MB,
-	//	time * 1000,
-	//	(float)file.size() / time / (float)MB);
+	auto end = std::chrono::steady_clock::now();
+	std::chrono::duration<float> dur = end - start;
+
+	auto time = dur.count();
+
+	printf("%30s: %8llu MB  in  %6.2f ms  ->  %6.2f MB/s\n", filename,
+		file.size() / MB,
+		time * 1000,
+		(float)file.size() / time / (float)MB);
 }
 
 int main () {

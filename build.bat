@@ -1,0 +1,1 @@
+clang -D_CRT_SECURE_NO_WARNINGS -std=c++17 -O3 -g0 lexer_merged.cpp -o lexer.exe
